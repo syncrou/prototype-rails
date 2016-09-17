@@ -57,9 +57,8 @@ ActionView::Helpers::JavaScriptHelper.module_eval do
     html_options = args.extract_options!.symbolize_keys
 
     function = block_given? ? update_page(&block) : args[0] || ''
-    onclick = "#{"#{html_options[:onclick]}; " if html_options[:onclick]}#{function}; return false;"
+    onclick = "#{"#{html_options[:onclick]}; ".html_safe if html_options[:onclick]}#{function}; return false;"
     href = html_options[:href] || '#'
-
-    content_tag(:a, name, html_options.merge(:href => href, :onclick => onclick))
+    content_tag(:a, name, html_options.merge(:href => href, :onclick => onclick), false)
   end
 end
