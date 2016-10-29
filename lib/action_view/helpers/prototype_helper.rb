@@ -314,8 +314,14 @@ module ActionView
           #   page.insert_html :bottom, 'list', '<li>Last item</li>'
           #
           def insert_html(position, id, *options_for_render)
+            position_mapper = {:before => 'afterbegin',
+                               :after  => 'afterbegin',
+                               :bottom => 'beforeend',
+                               :top    => 'beforebegin'
+            }
+            js_position = position_mapper[position]
             content = javascript_object_for(render(*options_for_render))
-            record "Element.insert(\"#{id}\", { #{position.to_s.downcase}: #{content} });"
+            record "document.getElementById('#{id}').insertAdjacentHTML('#{js_position}', #{content});"
           end
 
           # Replaces the inner HTML of the DOM element with the given +id+.
@@ -547,7 +553,7 @@ module ActionView
 
             def with_formats(*args)
               return yield unless @context
-              
+
               lookup = @context.lookup_context
               begin
                 old_formats, lookup.formats = lookup.formats, args
